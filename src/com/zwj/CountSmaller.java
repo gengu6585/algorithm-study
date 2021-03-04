@@ -12,16 +12,18 @@ import java.util.Arrays;
 public class CountSmaller {
     public static void main(String[] args) {
         int[] nums = {7,5, 2, 6, 1};
-        int[] count = new int[nums.length];
-        System.out.println(Arrays.toString(count));
+        ArrayList<Integer> count = new ArrayList<>(nums.length);
+        for (int i = 0; i < nums.length; i++) {
+            count.add(0);
+        }
         Pair<Integer, Integer>[] pairs = new Pair[nums.length];
         for (int i = 0; i < nums.length; i++) {
             pairs[i] = new Pair<>(nums[i], i);
         }
         new CountSmaller().solution(pairs, 0, pairs.length - 1, count);
-        System.out.println(Arrays.toString(count));
+        System.out.println(count.toString());
     }
-    Pair<Integer, Integer>[] solution(Pair<Integer, Integer>[] pairs,int start,int end,int []count) {
+    Pair<Integer, Integer>[] solution(Pair<Integer, Integer>[] pairs,int start,int end,ArrayList<Integer>count) {
         if (end == start) {
             return new Pair[]{pairs[start]};
         }
@@ -34,7 +36,7 @@ public class CountSmaller {
             boolean flag = true;
             if (left[i].getKey() <= right[j].getKey()) {
                 result[k] = left[i];
-                count[left[i].getValue()] += j;
+                count.set(left[i].getValue(), count.get(left[i].getValue()) + j + 1);
                 k++;
                 i++;
                 flag = false;
@@ -50,7 +52,7 @@ public class CountSmaller {
         }
         for (; i < left.length; i++) {
             result[k] = left[i];
-            count[left[i].getValue()] += j;
+            count.set(left[i].getValue(), count.get(left[i].getValue()) + j);
             k++;
         }
         for (; j < right.length; j++) {
