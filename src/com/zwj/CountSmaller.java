@@ -33,19 +33,16 @@ public class CountSmaller {
         Pair<Integer, Integer>[] result = new Pair[end - start + 1];
         int i = 0, j = 0, k = 0;
         while (i < left.length && j < right.length) {
-            boolean flag = true;
             if (left[i].getKey() <= right[j].getKey()) {
                 result[k] = left[i];
-                count.set(left[i].getValue(), count.get(left[i].getValue()) + j + 1);
+                count.set(left[i].getValue(), count.get(left[i].getValue()) + j );
                 k++;
                 i++;
-                flag = false;
             }
             else   {
                 result[k] = right[j];
                 k++;
                 j++;
-                flag = true;
 
             }
 
