@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class N_Queen {
     public static void main(String[] args) {
-        int n = 4;
+        int n = 5;
         List<StringBuilder> chessboard = new ArrayList<>(n);
         List<List<String>> result = new ArrayList<>();
         for (int i = 0; i < n; i++) {

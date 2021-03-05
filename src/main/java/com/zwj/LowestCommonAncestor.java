@@ -8,8 +8,7 @@ import java.util.ArrayDeque;
  */
 public class LowestCommonAncestor {
 
-    ArrayDeque<TreeNode> pstack=null;
-    ArrayDeque<TreeNode> qstack=null;
+
     public static void main(String[] args) {
         int []nums = {3, 5, 1, 6, 2, 0, 8, 0, 0, 7, 4};
         TreeNode root = new TreeNode(nums);
@@ -27,7 +26,9 @@ public class LowestCommonAncestor {
             return null;
         }
         ArrayDeque<TreeNode> stack = new ArrayDeque<>();
-        preOrder(root, p, q, stack);
+        ArrayDeque<TreeNode> pstack=null;
+        ArrayDeque<TreeNode> qstack=null;
+        preOrder(root, p, q, stack,pstack,qstack);
         TreeNode father = root;
         while (pstack.size() != 0 && qstack.size() != 0) {
             if (pstack.peekLast().value != qstack.peekLast().value) {
@@ -39,22 +40,21 @@ public class LowestCommonAncestor {
         return father;
     }
 
-    void preOrder(TreeNode node,TreeNode p,TreeNode q, ArrayDeque<TreeNode> stack) {
+    void preOrder(TreeNode node,TreeNode p,TreeNode q, ArrayDeque<TreeNode> stack,ArrayDeque<TreeNode> pstack,ArrayDeque<TreeNode> qstack) {
         if (node == null) {
             return;
         }
         stack.push(node);
-        stack.clone();
         if (node.value == p.value) {
 //            pStack.addAll(stack);
-            this.pstack = stack.clone();
+            pstack = stack.clone();
         }
         if (node.value == q.value) {
 //            qStack.addAll(stack);
-            this.qstack = stack.clone();
+            qstack = stack.clone();
         }
-        preOrder(node.left,p,q, stack);
-        preOrder(node.right,p,q, stack);
+        preOrder(node.left,p,q, stack,pstack,qstack);
+        preOrder(node.right, p, q, stack, pstack, qstack);
         stack.pop();
     }
 }

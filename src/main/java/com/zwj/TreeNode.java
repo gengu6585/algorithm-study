@@ -39,8 +39,6 @@ public class TreeNode {
             remove.right = new TreeNode(nums[i++]);
             queue.add(remove.right);
         }
-
-
     }
 
     private static void writeArray(TreeNode currNode, int rowIndex, int columnIndex, String[][] res, int treeDepth) {
