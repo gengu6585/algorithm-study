@@ -106,6 +106,12 @@ public class TreeNode {
         }
     }
 
+    @Override
+    public String toString() {
+        return "TreeNode{" +
+                "value=" + value +
+                '}';
+    }
 
     public static void main(String[] args) {
         Integer[] integers = Stream.iterate(1, (a) -> a + 1).limit(50).toArray(Integer[]::new);
