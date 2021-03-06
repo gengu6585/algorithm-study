@@ -10,28 +10,33 @@ import java.util.stream.Stream;
 public class GraphDeepSearch {
     public static void main(String[] args) {
         int[][] nums = {{2, 4}, {2}, {3}, {4}, {3}};
+//        int[][] nums = {{1}, {2},{0}};
         GraphNode[] graph = Graph.create(nums);
         Integer[] integers = Stream.iterate(0, a -> a ).limit(nums.length).toArray(Integer[]::new);
         int[] visited = Arrays.stream(integers).mapToInt(Integer::valueOf).toArray();
         for (int i = 0; i < graph.length; i++) {
             if (visited[i] == 0) {
-                new GraphDeepSearch().dfs(graph[i],visited);
-
+                System.out.println(new GraphDeepSearch().dfs(graph[i],visited));;
             }
         }
     }
-    void dfs(GraphNode node, int[] visit) {
+    boolean dfs(GraphNode node, int[] visit) {
         if (node == null) {
-            return;
+            return true;
         }
+        boolean flag = true;
         visit[node.label] = 1;
         System.out.println(node.label);
         for (GraphNode neighbor : node.neighbors) {
+            if (visit[neighbor.label] == 1) {
+                return false;
+            }
             if (visit[neighbor.label] == 0) {
-                dfs(neighbor, visit);
+                 flag= dfs(neighbor, visit);
             }
         }
-        return;
+        visit[node.label] = 2;
+        return flag;
     }
 
 }
