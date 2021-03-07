@@ -1,9 +1,9 @@
 package com.zwj;
 
 import javafx.util.Pair;
-
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @Author:zengwenjie
@@ -20,16 +20,17 @@ public class CountSmaller {
         for (int i = 0; i < nums.length; i++) {
             pairs[i] = new Pair<>(nums[i], i);
         }
-        new CountSmaller().solution(pairs, 0, pairs.length - 1, count);
+        new CountSmaller().solution1(pairs, 0, pairs.length - 1, count);
+//        new CountSmaller().solution2(nums, count);
         System.out.println(count.toString());
     }
-    Pair<Integer, Integer>[] solution(Pair<Integer, Integer>[] pairs,int start,int end,ArrayList<Integer>count) {
+    Pair<Integer, Integer>[] solution1(Pair<Integer, Integer>[] pairs,int start,int end,ArrayList<Integer>count) {
         if (end == start) {
             return new Pair[]{pairs[start]};
         }
         int mid = (end + start) / 2;
-        Pair<Integer, Integer>[] left = solution(pairs, start, mid,count);
-        Pair<Integer, Integer>[] right = solution(pairs, mid + 1, end,count);
+        Pair<Integer, Integer>[] left = solution1(pairs, start, mid,count);
+        Pair<Integer, Integer>[] right = solution1(pairs, mid + 1, end,count);
         Pair<Integer, Integer>[] result = new Pair[end - start + 1];
         int i = 0, j = 0, k = 0;
         while (i < left.length && j < right.length) {
@@ -57,5 +58,44 @@ public class CountSmaller {
             k++;
         }
         return result;
+    }
+
+    void solution2(int[] nums, List<Integer> result) {
+        if (nums == null || nums.length == 0) {
+            return;
+        }
+        TreeNode node = new TreeNode(nums[nums.length - 1]);
+        result.set(nums.length - 1, 0) ;
+        for (int i = nums.length - 2; i >= 0; i--) {
+            binaryTreeInsert(node, nums[i], result,0,i);
+        }
+    }
+
+    void binaryTreeInsert(TreeNode node, int value, List<Integer> count,int smallerCount,int i) {
+        if (value < node.value) {
+            if (node.left == null) {
+                node.left = new TreeNode(value);
+                count.set(i,smallerCount);
+                node.count++;
+                return;
+            }
+            node.count++;
+            binaryTreeInsert(node.left, value, count,smallerCount,i);
+        } else if (value > node.value) {
+
+            smallerCount += node.count+node.repeat+1;
+            if (node.right == null) {
+                node.right = new TreeNode(value);
+                count.set(i,smallerCount);
+                return;
+            }
+
+            binaryTreeInsert(node.right, value, count, smallerCount,i);
+        } else {
+            smallerCount += node.count;
+            count.set(i,node.count);
+            node.repeat++;
+        }
+
     }
 }

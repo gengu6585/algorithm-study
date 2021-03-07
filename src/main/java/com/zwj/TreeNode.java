@@ -18,6 +18,7 @@ public class TreeNode {
     TreeNode left;
     TreeNode right;
     int count;
+    int repeat;
 
     public TreeNode(int value) {
         this.value = value;
