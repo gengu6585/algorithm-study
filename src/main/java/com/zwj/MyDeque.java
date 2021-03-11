@@ -1,6 +1,5 @@
 package com.zwj;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,4 +61,5 @@ public class MyDeque extends ArrayList<Integer> {
         ArrayList<Integer> clone = (ArrayList<Integer>) myDeque.clone();
         System.out.println(myDeque.equals(clone));
     }
+
 }

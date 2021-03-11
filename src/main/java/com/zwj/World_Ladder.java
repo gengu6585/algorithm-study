@@ -14,11 +14,9 @@ public class World_Ladder {
         String endWord = "cog";
         int result = new World_Ladder().solution(beginWord, endWord, wordList);
         System.out.println(result);
-
     }
     int solution(String beginWord, String endWord, List<String> wordList) {
         ArrayList<String> path = new ArrayList<>();
-
         int[] visited = new int[wordList.size()];
             HashMap<String, Integer> map = new HashMap<>();
             map.put(beginWord, -1);
@@ -29,7 +27,6 @@ public class World_Ladder {
                     return result;
                 }
             }
-
         return -1;
     }
 
