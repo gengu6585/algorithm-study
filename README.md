@@ -341,3 +341,34 @@ public class WiggleMaxLength {
    设金额数组，int dp [amount]
 
    dp[i]=Min{`dp[i-coins[0]]`,`dp[i-coins[1]]`,`dp[i-coins[2]]`...}+1
+
+# 7.特殊数据结构
+
+## 7.1Tried树（字典树）
+
+trie树，又称字典树或前缀树，是一种	有序的、用于统计、排序和存储字符串的数据结构，它与二叉查找树不同，关键字不是直接保存在节点中，而是由结点在树中的位置决定。
+
+![image-20210312152919119](README/image-20210312152919119.png)
+
+每个节点都包含一个节点数组，和一个结束标志。定义如下：
+
+```java
+public class TrieNode {
+    final static int MAX_CHAR_NUM = 26;
+    TrieNode[] child;
+    boolean is_end;
+
+    public TrieNode(boolean is_end) {
+        this.child = new TrieNode[MAX_CHAR_NUM];
+        this.is_end = is_end;
+    }
+}
+```
+
+## 7.2并查集
+
+一棵树代表一个结合，一棵树的根节点连向另一颗树的子节点为合并
+
+## 7.3线段树
+
+平衡二叉树，以一个数组建立线段树，是对`mid往左`的数（包含mid）建立`左线段树`，对`mid往右`的数建立`右线段树`，并以左右子树`数的加和`作为根结点。
