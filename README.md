@@ -165,7 +165,7 @@ Arrays.fill(dp, -1);
   }
   ```
 
-  ![image-20210228223952633](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20210228223952633.png)
+  ![image-20210228223952633](README/image-20210228223952633.png)
 
   
 
@@ -251,7 +251,7 @@ public class WiggleMaxLength {
     }
 ```
 
-![image-20210228223933213](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20210228223933213.png)
+![image-20210228223933213](README/image-20210228223933213.png)
 
 # 2.递归
 
