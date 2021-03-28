@@ -263,8 +263,8 @@ public class WiggleMaxLength {
 
 # 4.二叉树
 
-> 层序遍历记录高度的两种方法：
->
+## 4.1层序遍历记录高度的两种方法：
+
 > 1. 根节点的高度为0，每一次循环（弹出结点，加入该结点的结点）在加入结点的同时，把当前结点高度+1绑定给新加入节点。*使用键值对把结点和高度绑定*
 >
 > 2. 第一次循环时，队列只含有一个结点，执行一次循环后得到恰好是第二层的所有结点。
@@ -272,6 +272,79 @@ public class WiggleMaxLength {
 >    如果在循环之前记录队列的个数size，就知道在执行size次循环后恰好是下一层的所有结点。
 >
 >    由此类推。
+
+## 4.2二叉树的前中后续遍历的非递归写法
+
+> 一般有两种写法，`指针移动法`和 `退栈法`，前者适应三种遍历，后者只使用前序遍历和后续遍历。
+
+- 指针移动法
+
+  前序：
+
+  ```java
+  List<Integer> preorder(TreeNode node) {
+          ArrayDeque<TreeNode> stack = new ArrayDeque<>();
+          ArrayList<Integer> result = new ArrayList<>();
+          TreeNode p = node;
+          TreeNode lastVisited = null;
+          while (!stack.isEmpty() || p != null) {
+              while (p != null) {
+                  result.add(p.val); //遍历
+                  stack.push(p);
+                  p = p.left;
+              }
+              p=stack.pop();
+              p = p.right;
+          }
+          return result;
+      }
+  ```
+
+  中序：
+
+  ```java
+  List<Integer> inorder(TreeNode node) {
+          ArrayDeque<TreeNode> stack = new ArrayDeque<>();
+          ArrayList<Integer> result = new ArrayList<>();
+          TreeNode p = node;
+          while (!stack.isEmpty() || p != null) {
+              while (p != null) {
+                  stack.push(p);
+                  p = p.left;
+              }
+              p=stack.pop();
+  			result.add(p.val); //遍历
+              p = p.right;
+          }
+          return result;
+      }
+  ```
+
+  后序：
+
+  ```java
+  List<Integer> postorder(TreeNode node) {
+          ArrayDeque<TreeNode> stack = new ArrayDeque<>();
+          ArrayList<Integer> result = new ArrayList<>();
+          TreeNode p = node;
+          TreeNode lastVisited = null;
+          while (!stack.isEmpty() || p != null) {
+              while (p != null) {
+                  stack.push(p);
+                  p = p.left;
+              }
+              
+              p=stack.pop();
+              if(p.right==null||p.right==lastVisited){
+                  result.add(p.val); //遍历
+                  p=null;
+              }else p = p.right;
+          }
+          return result;
+      }
+  ```
+
+- 退栈法：直接把层序遍历的栈改成堆，调整入栈顺序即可得到前序遍历和后序遍历。
 
 # 5.图
 

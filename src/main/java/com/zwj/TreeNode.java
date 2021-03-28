@@ -1,12 +1,7 @@
 package com.zwj;
 
-import sun.reflect.generics.tree.Tree;
-
 import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.prefs.PreferenceChangeListener;
 import java.util.stream.Stream;
 
 /**
@@ -14,19 +9,19 @@ import java.util.stream.Stream;
  * @Date:2021/3/4 15:55
  */
 public class TreeNode {
-    int value;
+    int val;
     TreeNode left;
     TreeNode right;
     int count;
     int repeat;
 
     public TreeNode(int value) {
-        this.value = value;
+        this.val = value;
         this.count = 0;
     }
 
     public TreeNode(int[] nums) {
-        this.value = nums[0];
+        this.val = nums[0];
         int i = 1;
         ArrayDeque<TreeNode> queue = new ArrayDeque<>();
         queue.add(this);
@@ -46,7 +41,7 @@ public class TreeNode {
         // 保证输入的树不为空
         if (currNode == null) return;
         // 先将当前节点保存到二维数组中
-        res[rowIndex][columnIndex] = String.valueOf(currNode.value);
+        res[rowIndex][columnIndex] = String.valueOf(currNode.val);
 
         // 计算当前位于树的第几层
         int currLevel = ((rowIndex + 1) / 2);
@@ -108,7 +103,7 @@ public class TreeNode {
     @Override
     public String toString() {
         return "TreeNode{" +
-                "value=" + value +
+                "value=" + val +
                 '}';
     }
 

@@ -16,7 +16,7 @@ public class FlattenBinaryTreeToLinkList {
         TreeNode temp=root;
         TreeNode.show(root);
         while (temp != null) {
-            System.out.println(temp.value);
+            System.out.println(temp.val);
             temp = temp.right;
         }
 

@@ -31,7 +31,7 @@ public class LowestCommonAncestor {
         preOrder(root, p, q, stack,pstack,qstack);
         TreeNode father = root;
         while (pstack.size() != 0 && qstack.size() != 0) {
-            if (pstack.peekLast().value != qstack.peekLast().value) {
+            if (pstack.peekLast().val != qstack.peekLast().val) {
                 return father;
             }
             father = pstack.removeLast();
@@ -45,11 +45,11 @@ public class LowestCommonAncestor {
             return;
         }
         stack.push(node);
-        if (node.value == p.value) {
+        if (node.val == p.val) {
 //            pStack.addAll(stack);
             pstack = stack.clone();
         }
-        if (node.value == q.value) {
+        if (node.val == q.val) {
 //            qStack.addAll(stack);
             qstack = stack.clone();
         }

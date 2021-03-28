@@ -2,7 +2,6 @@ package com.zwj;
 
 import javafx.util.Pair;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -72,7 +71,7 @@ public class CountSmaller {
     }
 
     void binaryTreeInsert(TreeNode node, int value, List<Integer> count,int smallerCount,int i) {
-        if (value < node.value) {
+        if (value < node.val) {
             if (node.left == null) {
                 node.left = new TreeNode(value);
                 count.set(i,smallerCount);
@@ -81,7 +80,7 @@ public class CountSmaller {
             }
             node.count++;
             binaryTreeInsert(node.left, value, count,smallerCount,i);
-        } else if (value > node.value) {
+        } else if (value > node.val) {
 
             smallerCount += node.count+node.repeat+1;
             if (node.right == null) {

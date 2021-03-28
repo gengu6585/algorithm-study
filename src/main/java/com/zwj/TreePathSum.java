@@ -31,8 +31,8 @@ public class TreePathSum {
         if (treeNode == null) {
             return;
         }
-        target -= treeNode.value;
-        stack.push(treeNode.value);
+        target -= treeNode.val;
+        stack.push(treeNode.val);
         if (target < 0) {
             stack.pop();
             return;
