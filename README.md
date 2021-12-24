@@ -1,4 +1,10 @@
-# 0.Java常用集合工具使用
+---
+	title: 算法基础 
+date: 2021-3-29 17:20:03
+tags: 算法
+---
+
+# 0.Java常用API及写法
 
 ## 0.1java中堆栈和队列的使用：直接使用双端队列——ArrayDeque
 
@@ -50,6 +56,8 @@
 - PriorityQueue：优先队列即堆
 
   > 往优先队列加入元素时，会自动建堆
+  
+  > 优先队列默认是最小堆，使用最大的需传入Comp
 
 ## 0.2关于使用HashSet对Object去重
 
@@ -94,7 +102,11 @@ interface InterfaceExample{
 int[] ints = Arrays.stream(integers).mapToInt(Integer::valueOf).toArray();
 //用法二
 Integer[] integers = Stream.iterate(1, (a) -> a + 1).limit(50).toArray(Integer[]::new);
-
+//用法三:数组转换
+ //流中的元素全部装箱，转换为流 ---->int转为Integer
+        Stream<Integer> integerStream = stream.boxed();
+        //将流转换为数组
+        Integer[] integers = integerStream.toArray(Integer[]::new);
 ```
 
 ## 0.5妖魔鬼怪
@@ -112,6 +124,16 @@ Integer[] integers = Stream.iterate(1, (a) -> a + 1).limit(50).toArray(Integer[]
 int[]dp=new int[amount]
 Arrays.fill(dp, -1);
 ```
+
+## 0.7字符处理
+
+|          | Methods                                 | Describe           |
+| -------- | --------------------------------------- | ------------------ |
+| 字串添加 | append()                                | 末尾追加           |
+| 字串替换 | replace(int start, int end, String str) | 替换，前闭后开区间 |
+| 字串插入 | insert()                                | 可插入各种类型数字 |
+
+
 
 # 1.贪心
 
@@ -261,9 +283,92 @@ public class WiggleMaxLength {
 
 > 回溯法又称为试探法，但当探索到第一步时，发现原先的选择达不到目标，就退回一步重新选择，这种走不通就退回再走的思想成为回溯法。
 
-# 4.二叉树
+N皇后问题中，在每次放了棋子之后就标记不可访问位比在放的时候检测是否能放效率要高。
 
-## 4.1层序遍历记录高度的两种方法：
+# 4.分治法
+
+> 分治时要处理好最终条件。
+
+*快排可以快速求第几个大的元素也可以求最大的几个元素（两种情况使用快排都是最优）
+
+*堆排序可以快速最大的几个元素
+
+# 5.堆
+
+堆的实现，对point[][]数组使用堆排序
+
+```java
+int [][] solution(int [][]point,int k){
+   if (point==null) {
+      return null;
+   }
+   if (k>point.length) {
+      return null;
+   }
+   this.length=point.length;
+   heapBuild(point);
+   int [][]result=new int[k][];
+   int index=0;
+   for (int i = point.length-1; i >= point.length-k; i--) {
+      swap(point,0, i);
+      this.length--;
+      result[index]=point[i];
+      index++;
+      sink(point, 0);
+   }
+   
+   
+   return result;
+}
+void heapBuild(int[][]nums) {
+   for (int i = (nums.length-1)/2; i >= 0; i--) {
+      sink(nums, i);
+   }
+}
+void sink(int[][]nums,int pos) {
+   while (2*pos+1<length) {
+      boolean flag=false;
+      if (2*pos+2<length) {
+         
+         if (bigThan(nums, 2*pos+1, 2*pos+2)) {
+            if (bigThan(nums, pos, 2*pos+2)) {
+               swap(nums,pos, 2*pos+2);
+               pos=2*pos+2;
+               flag=true;
+            }
+         }else {
+            if (bigThan(nums, pos, 2*pos+1)) {
+               swap(nums,pos, 2*pos+1);
+               pos=2*pos+1;
+               flag=true;
+            }
+         }
+      }else {
+         if (bigThan(nums, pos, 2*pos+1)) {
+            swap(nums,pos, 2*pos+1);
+            pos=2*pos+1;
+            flag=true;
+         }
+      }
+      if (!flag) {
+         break;
+      }
+   }
+}
+boolean bigThan(int [][]nums,int i,int j) {
+   return (Math.pow(nums[i][0], 2)+Math.pow(nums[i][1], 2)>Math.pow(nums[j][0], 2)+Math.pow(nums[j][1], 2));
+}
+
+void swap(int[][]nums,int x,int y) {
+   int []temp=nums[x];
+   nums[x]=nums[y];
+   nums[y]=temp;
+}
+```
+
+# 6.二叉树
+
+## 6.1层序遍历记录高度的两种方法：
 
 > 1. 根节点的高度为0，每一次循环（弹出结点，加入该结点的结点）在加入结点的同时，把当前结点高度+1绑定给新加入节点。*使用键值对把结点和高度绑定*
 >
@@ -273,7 +378,7 @@ public class WiggleMaxLength {
 >
 >    由此类推。
 
-## 4.2二叉树的前中后续遍历的非递归写法
+## 6.2二叉树的前中后续遍历的非递归写法
 
 > 一般有两种写法，`指针移动法`和 `退栈法`，前者适应三种遍历，后者只使用前序遍历和后续遍历。
 
@@ -346,9 +451,62 @@ public class WiggleMaxLength {
 
 - 退栈法：直接把层序遍历的栈改成堆，调整入栈顺序即可得到前序遍历和后序遍历。
 
-# 5.图
+  前序遍历：
 
-### 5.1环的判断
+  ```java
+  List<Integer> preorder(TreeNode root) {
+          ArrayDeque<TreeNode> stack = new ArrayDeque<>();
+          LinkedList<Integer> result = new LinkedList<>();
+          if (root == null) {
+              return result;
+          }
+          stack.push(root);
+  
+          while (!stack.isEmpty()) {
+              TreeNode temp = stack.pop();
+              result.addLast(temp.val); //遍历
+              if (temp.left != null) {
+                  stack.push(temp.right);
+              }
+              if (temp.right != null) {
+                  stack.push(temp.left);
+              }
+          }
+          return result;
+      }
+  ```
+
+  后序遍历：
+
+  ```java
+  List<Integer> postorder(TreeNode root) {
+          ArrayDeque<TreeNode> stack = new ArrayDeque<>();
+          LinkedList<Integer> result = new LinkedList<>();
+          if (root == null) {
+              return result;
+          }
+          stack.push(root);
+  
+          while (!stack.isEmpty()) {
+              TreeNode temp = stack.pop();
+              result.addFirst(temp.val); //遍历，这里利用 中右左 的前序遍历逆序就是后序遍历
+              if (temp.left != null) {
+                  stack.push(temp.left);
+              }
+              //后入栈的会先被遍历，故为 中右左
+              if (temp.right != null) {
+                  stack.push(temp.right);
+              }
+          }
+          return result;
+      }
+  ```
+
+  
+
+# 7.图
+
+### 7.1环的判断
 
 1. 使用深搜，但是对visited数组修改为三种状态，深搜第一步先把当前结点的状态设置为`正在遍历`，每次对临接结点深搜之前，如果该结点的状态是`正在遍历`说明遇到了未搜索完退栈的结点，即出现环路，返回false。
 
@@ -356,21 +514,25 @@ public class WiggleMaxLength {
 
    > 广搜也可用三种状态标记，因为可能会出现一个结点被多次添加到队列的情况。
 
-## 5.2使用广搜得到单源最短路径（距离相同要求返回多条结果）
+## 7.2使用广搜得到单源最短路径（距离相同要求返回多条结果）
 
 > 遇到最短路径问题是时，往往需要准备一个数组（初始值为-1）记录搜索路径下所有结点的距离始点的距离，当临接点的距离大于所记录的距离不对该临界点进行搜索。
 >
 > 这样处理既避免了环路的问题。
 
-# 6.动态规划
+如果是单纯求最短路劲的距离，则不需要保存队列中所有已经遍历的元素，。
 
-## 6.1动态规划基础
+# 8.动态规划
+
+## 8.1动态规划基础
 
 - 动态规划是运筹学的一个分支，是求解决策过程最优化的数学方法。它是20世界50年代初美国数学家R.E.Bellman等人提出的最优化原理，它利用各阶段之间的关系，逐个求解，最终求得全局最优解。在设计动态规划算法时，需要确认原问题和子问题，动态规划状态，边界状态值，状态转移方程等关键因素。
 
 > 动态规划的状态转移方程不一定是连续的，方程的左边也可能出现很多个状态。
 >
 > 一个状态也可能需要保存多个值。	
+
+> 动态规划求解的基本思路：根据状态转移方程得到最基础的方法是暴力递归。在这之上根据状态方程变量的个数，确定使用一维，二维或三维数组来反向模拟递归的过程。最后再根据数组中的依赖关系进行优化降维，比如状态方程变量个数为2，使用二维数组，但是数组每个元素只依赖于上一行以及所在行的元素，每次至多只需要记录上一行的数据和当前行的数据。
 
 ## 例题：
 
@@ -384,6 +546,8 @@ public class WiggleMaxLength {
    >      偷窃到的最高金额 = 1 + 3 = 4 。
 
    dp[i]=Max{dp[i-1]),dp[i-2]+nums[i]}
+
+   优化：仅需记录前两个数据
 
 2. 假设你正在爬楼梯。需要 *n* 阶你才能到达楼顶。
 
@@ -400,6 +564,8 @@ public class WiggleMaxLength {
    状态方程：
 
    dp[i]=`dp[i-1]`+`dp[i-2]`
+
+   优化：只需要记录前面两个的数据
 
 3. 给定不同面额的硬币 coins 和一个总金额 amount。编写一个函数来计算可以凑成总金额所需的最少的硬币个数。如果没有任何一种硬币组合能组成总金额，返回 -1。
 
@@ -431,9 +597,9 @@ public class WiggleMaxLength {
    
 
 
-# 7.特殊数据结构
+# 9.特殊数据结构
 
-## 7.1Tried树（字典树）
+## 9.1Tried树（字典树）
 
 trie树，又称字典树或前缀树，是一种	有序的、用于统计、排序和存储字符串的数据结构，它与二叉查找树不同，关键字不是直接保存在节点中，而是由结点在树中的位置决定。
 
@@ -454,10 +620,66 @@ public class TrieNode {
 }
 ```
 
-## 7.2并查集
+## 9.2并查集
 
-一棵树代表一个结合，一棵树的根节点连向另一颗树的子节点为合并
+> 一棵树表示一个集合，两个集合的合并并非是传入两个树节点返回合并后的树根结点。
+>
+> 并查集的实现一般就是对数组进行操作，数组中最初就有包括了所有的元素。
+>
+> 借助一个与之等长的parent数组，用数组下标建立两个元素之间的父子关系。
 
-## 7.3线段树
+
+
+并查集的实现：
+
+```java
+//传递的x，y为原数组中的下标，原数组中的树形结构关系会保存在parent中，parent初始化自己（自己是自己的爸爸）
+//这里的rank是优化用的，避免树形结构成串，每次联结两个集合时先判断谁更高。
+//size数组是用来记录集合的元素个数。
+boolean union(int x, int y,int []parent,int []rank,int []size) {
+    if (connected(x, y, parent)) {
+        return false;
+    }
+    int x_parent = find(x, parent);
+    int y_parent = find(y, parent);
+    int x_size = size[x_parent];
+    int y_size = size[y_parent];
+    //爸爸不一样说明两者是不同集合的，这是才需要合并
+    if (x_parent != y_parent) {
+        if (rank[x_parent] > rank[y_parent]) {
+            parent[y_parent] = x_parent;
+            size[x_parent] = x_size + y_size;
+            return true;
+        } else if (rank[x_parent] < rank[y_parent]) {
+            parent[x_parent] = y_parent;
+            size[y_parent] = x_size + y_size;
+            return true;
+        } else {
+            parent[y_parent] = x_parent;
+            size[x_parent] = x_size + y_size;
+            rank[x_parent]++;
+            return true;
+        }
+    }
+    return true;
+}
+
+//爸爸相同说明两元素处于同一棵树中
+boolean connected(int x, int y,int []parent) {
+    return find(x,parent) == find(y,parent);
+}
+//找爸爸
+int find(int x,int []parent) {
+        int result = x;
+        while (result != parent[result]) {
+            result = parent[result];
+        }
+        return result;
+    }
+```
+
+
+
+## 9.3线段树
 
 平衡二叉树，以一个数组建立线段树，是对`mid往左`的数（包含mid）建立`左线段树`，对`mid往右`的数建立`右线段树`，并以左右子树`数的加和`作为根结点。

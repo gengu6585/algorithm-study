@@ -16,7 +16,6 @@ public class Subset {
 //        int nums[] = {10,1,2,7,6,1,5};
         int sum=0;
         int target=2;
-
         int nums[] = {1,1,2,2,2};
 //        int nums[] = {8, 2,2,4,4};
 //        int nums[] = {8, 2,2,4,4,1,16,9,7,8,2,14,4,4,3,3,3,1};
