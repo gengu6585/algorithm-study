@@ -6,16 +6,20 @@ import java.util.*;
  * @Author:zengwenjie
  * @Date:2021-12-24 13:05
  */
-public class Problem {
-    HashSet set ;
+public class Problem extends  Thread {
+    static int solutionNums = 0;
+    int runningPatter;
     int []row1;
     int []row2;
     int[] _row2;
-    int [][] limit;
+    int [][] limitOfRow1;
+    int [][] limitOfRow2;
     int r;
     int m;
+    boolean flag;
 
-    public Problem(int m) {
+    public Problem(int m,int runningPatter) {
+        this.runningPatter = runningPatter;
         init(m);
     }
 
@@ -28,14 +32,11 @@ public class Problem {
         }
         row2 = new int[m];
         _row2 = new int[m];
-        //生成全局的set
-        set= new HashSet<Integer>();
-        for (int i = 0; i < row1.length; i++) {
-            set.add(row1[i]);
-        }
-
+        //flag初始化为false表示为找到三行序列
+        flag = false;
         //初始化limit数组
-        limit = new int[m][2];
+        limitOfRow1 = new int[m][2];
+        limitOfRow2 = new int[m][2];
 
     }
     public void fintRow2ByFormula(int m){
@@ -52,19 +53,26 @@ public class Problem {
             _row2[m-2*i-2] = row1[r -1-i];
             _row2[m-2*i - 3] = row1[m-2 - i];
         }
+        generateLimit(2);
         findRow3(m);
         row2 = _row2;
+        generateLimit(2);
         findRow3(m);
     }
+
+
 
     public  void findRow3(int m) {
         int[] queen = new int[m];
         Arrays.fill(queen, 0);
         int row=0;
-        queen[row] = limit[row][0];
-        boolean flag = false;
+        queen[row] = limitOfRow2[row][0];
         while (row>=0) {
-            if (row < m && queen[row] <= limit[row][1]) {
+            if (solutionNums >= 3) {
+                return;
+            }
+
+            if (row < m && queen[row] <= limitOfRow2[row][1]) {
                 if (!judgeRow3(queen, row)) {
                     queen[row]++;
                 } else {
@@ -72,11 +80,11 @@ public class Problem {
                     if (row >= m) {
                         continue;
                     }
-                    queen[row] = limit[row][0];
+                    queen[row] = limitOfRow2[row][0];
                 }
             } else {
                 if (row >= m) {
-                    flag=true;
+                    solutionNums++;
                     System.out.println("当m=" +m+"时，"+
                             "找到一组解：");
                     System.out.println("row1: "+ Arrays.toString(row1));
@@ -95,16 +103,15 @@ public class Problem {
 
             }
         }
-        if (!flag) {
-            System.out.println("未找到");
-        }
-    }public  void findRow2(int m) {
+
+    }
+    public  void findRow2(int m) {
         int[] queen = new int[m];
         Arrays.fill(queen, 0);
         int row=0;
-        boolean flag = false;
+        queen[row] = limitOfRow1[row][0];
         while (row>=0) {
-            if (row < m && queen[row] < m) {
+            if (row < m && queen[row] <= limitOfRow1[row][1]) {
                 if (!judgeRow2(queen, row)) {
                     queen[row]++;
                 } else {
@@ -112,7 +119,7 @@ public class Problem {
                     if (row >= m) {
                         continue;
                     }
-                    queen[row] = 0;
+                    queen[row] = limitOfRow1[row][0];
                 }
             } else {
                 if (row >= m) {
@@ -142,9 +149,6 @@ public class Problem {
             if (i!=row&&queen[i] == queen[row]) {
                 return false;
             }
-            if (!set.contains(row1[i] - row1[queen[i]]) || !set.contains(row2[i] - row1[queen[i]])) {
-                return false;
-            }
             if (set1.contains(row1[i] - row1[queen[i]]) || set2.contains(row2[i] - row1[queen[i]])) {
                 return false;
             }
@@ -159,9 +163,6 @@ public boolean judgeRow2(int []queen, int row) {
             if (i!=row&&queen[i] == queen[row]) {
                 return false;
             }
-            if (!set.contains(row1[i] - row1[queen[i]])) {
-                return false;
-            }
             if (set1.contains(row1[i] - row1[queen[i]])) {
                 return false;
             }
@@ -171,30 +172,40 @@ public boolean judgeRow2(int []queen, int row) {
     }
 
     public void solution(int m) {
-        generateLimit(1);
-        findRow2(m);
-    }
-
-    void generateLimit(int row) {
-        if (row == 1) {
-            for (int i = 0; i < limit.length; i++) {
-                limit[i][0] = Math.max(row1[i] - r, -r)+r;
-                limit[i][1] = Math.min(row1[i] + r, r)+r;
-            }
-        } else if (row == 2) {
-            for (int i = 0; i < limit.length; i++) {
-                limit[i][0] = Math.max(Math.max(row1[i] - r, -r), Math.max(row2[i] - r, -r))+r;
-                limit[i][1] = Math.min(Math.min(row1[i] + r, r), Math.min(row2[i] + r, r))+r;
-            }
+        if (runningPatter == 3) {
+            fintRow2ByFormula(m);
+        } else {
+            generateLimit(1);
+            findRow2(m);
         }
     }
+    void generateLimit(int row) {
+        if (row == 1) {
+            for (int i = 0; i < limitOfRow1.length; i++) {
+                limitOfRow1[i][0] = Math.max(row1[i] - r, -r)+r;
+                limitOfRow1[i][1] = Math.min(row1[i] + r, r)+r;
+            }
+        } else if (row == 2) {
+            for (int i = 0; i < limitOfRow2.length; i++) {
+                limitOfRow2[i][0] = Math.max(Math.max(row1[i] - r, -r), Math.max(row2[i] - r, -r))+r;
+                limitOfRow2[i][1] = Math.min(Math.min(row1[i] + r, r), Math.min(row2[i] + r, r))+r;
+            }
+
+        }
+    }
+    @Override
+    public void run() {
+        solution(m);
+    }
+
+
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNext()) {
             int m = scanner.nextInt();
-            new Problem(m).solution(m);
+            new Problem(m,1).start();
+//            new Problem(m,3).start();
         }
-
     }
 }
