@@ -9,9 +9,9 @@ import java.util.*;
 public class Problem extends  Thread {
     static int solutionNums = 0;
     int runningPatter;
+    int []baseLine;
     int []row1;
     int []row2;
-    int[] _row2;
     int [][] limitOfRow1;
     int [][] limitOfRow2;
     int r;
@@ -26,13 +26,14 @@ public class Problem extends  Thread {
 
     void init(int m) {
         this.m=m;
-        row1 = new int[m];
+        baseLine = new int[m];
         r=(m-1)/2;
+
         for (int i = 0; i < m; i++) {
-            row1[i]=-r+i;
+            baseLine[i]=-r+i;
         }
+        row1 = baseLine.clone();
         row2 = new int[m];
-        _row2 = new int[m];
         //flag初始化为false表示为找到三行序列
         flag = false;
         //初始化limit数组
@@ -43,20 +44,25 @@ public class Problem extends  Thread {
     public void fintRow2ByFormula(int m){
         int r=(m-1)/2;
         //按照公式从左往右生成第二行
-        row2[0] = row1[0];
+        int[] row2_1 = new int[m];
+        row2_1[0] = row1[0];
         for (int i = 0; i < r; i++) {
-            row2[2*i+1] = row1[r + 1+i];
-            row2[2*i + 2] = row1[1 + i];
+            row2_1[2*i+1] = row1[r + 1+i];
+            row2_1[2*i + 2] = row1[1 + i];
         }
         //按照公式从右往左生成第二行
-        _row2[m-1] = row1[m-1];
+        int[] row2_2 = new int[m];
+        row2_2[m-1] = row1[m-1];
         for (int i = 0; i < r; i++) {
-            _row2[m-2*i-2] = row1[r -1-i];
-            _row2[m-2*i - 3] = row1[m-2 - i];
+            row2_2[m-2*i-2] = row1[r -1-i];
+            row2_2[m-2*i - 3] = row1[m-2 - i];
         }
+        row2 = row2_1;
+        row1 = baseLine.clone();
         generateLimit(2);
         findRow3(m);
-        row2 = _row2;
+        row1 = baseLine.clone();
+        row2 = row2_2;
         generateLimit(2);
         findRow3(m);
     }
@@ -90,7 +96,7 @@ public class Problem extends  Thread {
 
                     int[] row3 = new int[row1.length];
                     for (int i = 0; i < row1.length; i++) {
-                        row3[i] = row1[queen[i]];
+                        row3[i] = baseLine[queen[i]];
                     }
                     System.out.println("当m=" +m+"时，runningPattern:"+runningPatter+
                             ",找到一组解：");
@@ -134,10 +140,12 @@ public class Problem extends  Thread {
             } else {
                 if (row >= m) {
                     for (int i = 0; i < row1.length; i++) {
-                        row2[i] = row1[queen[i]];
+                        row2[i] = baseLine[queen[i]];
                     }
                     generateLimit(2);
                     findRow3(m);
+                    row1 = baseLine.clone();
+
                 }
                 row--;
                 if (row < 0) {
@@ -158,11 +166,11 @@ public class Problem extends  Thread {
             if (i!=row&&queen[i] == queen[row]) {
                 return false;
             }
-            if (set1.contains(row1[i] - row1[queen[i]]) || set2.contains(row2[i] - row1[queen[i]])) {
+            if (set1.contains(row1[i] - baseLine[queen[i]]) || set2.contains(row2[i] - baseLine[queen[i]])) {
                 return false;
             }
-            set1.add(row1[i] - row1[queen[i]]);
-            set2.add(row2[i] - row1[queen[i]]);
+            set1.add(row1[i] - baseLine[queen[i]]);
+            set2.add(row2[i] - baseLine[queen[i]]);
         }
         return true;
     }
@@ -172,10 +180,10 @@ public class Problem extends  Thread {
             if (i!=row&&queen[i] == queen[row]) {
                 return false;
             }
-            if (set1.contains(row1[i] - row1[queen[i]])) {
+            if (set1.contains(row1[i] - baseLine[queen[i]])) {
                 return false;
             }
-            set1.add(row1[i] - row1[queen[i]]);
+            set1.add(row1[i] - baseLine[queen[i]]);
         }
         return true;
     }
@@ -195,17 +203,44 @@ public class Problem extends  Thread {
                 limitOfRow1[i][0] = Math.max(row1[i] - r, -r)+r;
                 limitOfRow1[i][1] = Math.min(row1[i] + r, r)+r;
             }
+            sortByLimitLength(limitOfRow1);
         } else if (row == 2) {
             for (int i = 0; i < limitOfRow2.length; i++) {
                 limitOfRow2[i][0] = Math.max(Math.max(row1[i] - r, -r), Math.max(row2[i] - r, -r))+r;
                 limitOfRow2[i][1] = Math.min(Math.min(row1[i] + r, r), Math.min(row2[i] + r, r))+r;
             }
+            sortByLimitLength(limitOfRow2);
+        }
 
+        //按照limit中的区间排序
+
+
+    }
+    class SortObject{
+        int row1;
+        int row2;
+        int [] limitItem;
+        int limitSub;
+
+        public SortObject(int row1, int row2, int []limitItem,int limitSub) {
+            this.row1 = row1;
+            this.row2 = row2;
+            this.limitItem = limitItem;
+            this.limitSub=limitSub;
         }
     }
-    @Override
-    public void run() {
-        solution(m);
+
+    void sortByLimitLength(int [][] limit) {
+        ArrayList<SortObject> list = new ArrayList<>();
+        for (int i = 0; i < m; i++) {
+            list.add(new SortObject(row1[i], row2[i], limit[i], limit[i][1] - limit[i][0]));
+        }
+        list.sort((a,b)->a.limitSub-b.limitSub);
+        for (int i = 0; i < m; i++) {
+            row1[i] = list.get(i).row1;
+            row2[i] = list.get(i).row2;
+            limit[i] = list.get(i).limitItem;
+        }
     }
 
 
