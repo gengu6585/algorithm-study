@@ -17,6 +17,7 @@ public class Problem extends  Thread {
     int r;
     int m;
     boolean flag;
+    static Object object = new Object();
 
     public Problem(int m,int runningPatter) {
         this.runningPatter = runningPatter;
@@ -69,9 +70,9 @@ public class Problem extends  Thread {
         queen[row] = limitOfRow2[row][0];
         while (row>=0) {
             if (solutionNums >= 3) {
+                System.out.println("查找结束");
                 return;
             }
-
             if (row < m && queen[row] <= limitOfRow2[row][1]) {
                 if (!judgeRow3(queen, row)) {
                     queen[row]++;
@@ -84,16 +85,19 @@ public class Problem extends  Thread {
                 }
             } else {
                 if (row >= m) {
+                    flag=true;
                     solutionNums++;
-                    System.out.println("当m=" +m+"时，"+
-                            "找到一组解：");
-                    System.out.println("row1: "+ Arrays.toString(row1));
-                    System.out.println("row2: "+ Arrays.toString(row2));
+
                     int[] row3 = new int[row1.length];
                     for (int i = 0; i < row1.length; i++) {
                         row3[i] = row1[queen[i]];
                     }
+                    System.out.println("当m=" +m+"时，runningPattern:"+runningPatter+
+                            ",找到一组解：");
+                    System.out.println("row1: "+ Arrays.toString(row1));
+                    System.out.println("row2: "+ Arrays.toString(row2));
                     System.out.println("row3: " + Arrays.toString(row3));
+
                 }
                 row--;
                 if (row < 0) {
@@ -103,6 +107,9 @@ public class Problem extends  Thread {
 
             }
         }
+        if (!flag) {
+            System.out.println("不存在");
+        }
 
     }
     public  void findRow2(int m) {
@@ -111,6 +118,9 @@ public class Problem extends  Thread {
         int row=0;
         queen[row] = limitOfRow1[row][0];
         while (row>=0) {
+            if (solutionNums >= 3) {
+                return;
+            }
             if (row < m && queen[row] <= limitOfRow1[row][1]) {
                 if (!judgeRow2(queen, row)) {
                     queen[row]++;
@@ -123,7 +133,6 @@ public class Problem extends  Thread {
                 }
             } else {
                 if (row >= m) {
-                    flag=true;
                     for (int i = 0; i < row1.length; i++) {
                         row2[i] = row1[queen[i]];
                     }
@@ -157,7 +166,7 @@ public class Problem extends  Thread {
         }
         return true;
     }
-public boolean judgeRow2(int []queen, int row) {
+    public boolean judgeRow2(int []queen, int row) {
         HashSet<Integer> set1 = new HashSet<>();
         for (int i = 0; i <=row; i++) {
             if (i!=row&&queen[i] == queen[row]) {
@@ -172,6 +181,7 @@ public boolean judgeRow2(int []queen, int row) {
     }
 
     public void solution(int m) {
+        solutionNums = 0;
         if (runningPatter == 3) {
             fintRow2ByFormula(m);
         } else {
@@ -204,8 +214,15 @@ public boolean judgeRow2(int []queen, int row) {
         Scanner scanner = new Scanner(System.in);
         while (scanner.hasNext()) {
             int m = scanner.nextInt();
-            new Problem(m,1).start();
+//            new Problem(m,1).solution(m);
 //            new Problem(m,3).start();
+            long startTime = System.currentTimeMillis();    //获取开始时间
+            new Problem(m,3).solution(m);
+//            new Problem(m,3).start();
+            long endTime = System.currentTimeMillis();    //获取结束时间
+
+            System.out.println("程序运行时间：" + (endTime - startTime) + "ms");    //输出程序运行时间
+
         }
     }
 }
