@@ -18,6 +18,13 @@ public class Problem extends  Thread {
     int m;
     boolean flag;
     static Object object = new Object();
+    HashSet<Integer> subSet1;
+    HashSet<Integer> subSet2;
+    HashSet<Integer> currentSet;
+    ArrayDeque<Integer> lastAddIndexStack = null;
+    ArrayDeque<Integer> lastAddItemOfSubSet1 = null;
+    ArrayDeque<Integer> lastAddItemOfSubSet2 = null;
+
 
     public Problem(int m,int runningPatter) {
         this.runningPatter = runningPatter;
@@ -25,6 +32,12 @@ public class Problem extends  Thread {
     }
 
     void init(int m) {
+        subSet1 = new HashSet<Integer>();
+        subSet2=new HashSet<Integer>();
+        currentSet=new HashSet<Integer>();
+        lastAddIndexStack = new ArrayDeque<>();
+        lastAddItemOfSubSet1 = new ArrayDeque<>();
+        lastAddItemOfSubSet2 = new ArrayDeque<>();
         this.m=m;
         baseLine = new int[m];
         r=(m-1)/2;
@@ -74,6 +87,12 @@ public class Problem extends  Thread {
         Arrays.fill(queen, 0);
         int row=0;
         queen[row] = limitOfRow2[row][0];
+        subSet1.clear();
+        subSet2.clear();
+        currentSet.clear();
+        lastAddIndexStack.clear();
+        lastAddItemOfSubSet1.clear();
+        lastAddItemOfSubSet2.clear();
         while (row>=0) {
             if (solutionNums >= 3) {
                 System.out.println("查找结束");
@@ -104,6 +123,11 @@ public class Problem extends  Thread {
                     System.out.println("row2: "+ Arrays.toString(row2));
                     System.out.println("row3: " + Arrays.toString(row3));
 
+                }
+                if (row > 0) {
+                    subSet1.remove(lastAddItemOfSubSet1.pop());
+                    subSet2.remove(lastAddItemOfSubSet2.pop());
+                    currentSet.remove(lastAddIndexStack.pop());
                 }
                 row--;
                 if (row < 0) {
@@ -160,18 +184,20 @@ public class Problem extends  Thread {
         }
     }
     public boolean judgeRow3(int []queen, int row) {
-        HashSet<Integer> set1 = new HashSet<>();
-        HashSet<Integer> set2 = new HashSet<>();
-        for (int i = 0; i <=row; i++) {
-            if (i!=row&&queen[i] == queen[row]) {
-                return false;
-            }
-            if (set1.contains(row1[i] - baseLine[queen[i]]) || set2.contains(row2[i] - baseLine[queen[i]])) {
-                return false;
-            }
-            set1.add(row1[i] - baseLine[queen[i]]);
-            set2.add(row2[i] - baseLine[queen[i]]);
+//        HashSet<Integer> set1 = new HashSet<>();
+//        HashSet<Integer> set2 = new HashSet<>();
+        if (currentSet.contains(queen[row])) {
+            return false;
         }
+        if (subSet1.contains(row1[row] - baseLine[queen[row]])||subSet2.contains(row2[row] - baseLine[queen[row]])) {
+            return false;
+        }
+        currentSet.add(queen[row]);
+        subSet1.add(row1[row] - baseLine[queen[row]]);
+        subSet2.add(row2[row] - baseLine[queen[row]]);
+        lastAddIndexStack.push(queen[row]);
+        lastAddItemOfSubSet1.push(row1[row] - baseLine[queen[row]]);
+        lastAddItemOfSubSet2.push(row2[row] - baseLine[queen[row]]);
         return true;
     }
     public boolean judgeRow2(int []queen, int row) {
