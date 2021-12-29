@@ -7,6 +7,7 @@ import java.util.*;
  * @Date:2021-12-24 13:05
  */
 public class Problem extends  Thread {
+    long startTime = 0;
     static int solutionNums = 0;
     int runningPatter;
     int []baseLine;
@@ -19,24 +20,34 @@ public class Problem extends  Thread {
     boolean flag;
     static Object object = new Object();
     HashSet<Integer> subSet1;
+    HashSet<Integer> subSet1Row2;
     HashSet<Integer> subSet2;
     HashSet<Integer> currentSet;
+    HashSet<Integer> currentSetRow2;
     ArrayDeque<Integer> lastAddIndexStack = null;
+    ArrayDeque<Integer> lastAddIndexStackRow2 = null;
     ArrayDeque<Integer> lastAddItemOfSubSet1 = null;
+    ArrayDeque<Integer> lastAddItemOfSubSetRow2 = null;
     ArrayDeque<Integer> lastAddItemOfSubSet2 = null;
 
 
-    public Problem(int m,int runningPatter) {
+    public Problem(int m,int runningPatter,long startTime) {
         this.runningPatter = runningPatter;
         init(m);
+        this.startTime = startTime;
+
     }
 
     void init(int m) {
         subSet1 = new HashSet<Integer>();
+        subSet1Row2 = new HashSet<Integer>();
         subSet2=new HashSet<Integer>();
         currentSet=new HashSet<Integer>();
+        currentSetRow2=new HashSet<Integer>();
         lastAddIndexStack = new ArrayDeque<>();
+        lastAddIndexStackRow2 = new ArrayDeque<>();
         lastAddItemOfSubSet1 = new ArrayDeque<>();
+        lastAddItemOfSubSetRow2 = new ArrayDeque<>();
         lastAddItemOfSubSet2 = new ArrayDeque<>();
         this.m=m;
         baseLine = new int[m];
@@ -86,17 +97,33 @@ public class Problem extends  Thread {
         int[] queen = new int[m];
         Arrays.fill(queen, 0);
         int row=0;
-        queen[row] = limitOfRow2[row][0];
+        for (int i = 0; i < m; i++) {
+            queen[i] = limitOfRow2[i][0];
+        }
         subSet1.clear();
         subSet2.clear();
         currentSet.clear();
         lastAddIndexStack.clear();
         lastAddItemOfSubSet1.clear();
         lastAddItemOfSubSet2.clear();
+        int counter = 0;
         while (row>=0) {
-            if (solutionNums >= 3) {
+            if (solutionNums >= 5) {
                 System.out.println("查找结束");
                 return;
+            }
+            counter++;
+            if (counter > 500000000) {
+                System.out.println("当前queen为："+ Arrays.toString(queen));
+                System.out.println("limit数组为"+ Arrays.deepToString(limitOfRow2));
+                counter = 0;
+                double percent = 0;
+                long mul = 1;
+                for (int i = 0; i < 11; i++) {
+                    mul *= (limitOfRow2[i][1] - limitOfRow2[i][0] + 1);
+                    percent+=(double) (queen[i]-limitOfRow2[i][0])/mul;
+                }
+                System.out.println("当前搜索进度----" + String.format("%.4f",percent*100) + "%");
             }
             if (row < m && queen[row] <= limitOfRow2[row][1]) {
                 if (!judgeRow3(queen, row)) {
@@ -146,7 +173,14 @@ public class Problem extends  Thread {
         int[] queen = new int[m];
         Arrays.fill(queen, 0);
         int row=0;
-        queen[row] = limitOfRow1[row][0];
+        for (int i = 0; i < m; i++) {
+            queen[i] = limitOfRow1[i][0];
+        }
+        lastAddIndexStackRow2.clear();
+        lastAddItemOfSubSetRow2.clear();
+        subSet1Row2.clear();
+        currentSetRow2.clear();
+
         while (row>=0) {
             if (solutionNums >= 3) {
                 return;
@@ -166,10 +200,16 @@ public class Problem extends  Thread {
                     for (int i = 0; i < row1.length; i++) {
                         row2[i] = baseLine[queen[i]];
                     }
+                    System.out.println("第一行为："+ Arrays.toString(row1));
+                    System.out.println("找到第二行为： "+ Arrays.toString(row2));
                     generateLimit(2);
                     findRow3(m);
                     row1 = baseLine.clone();
 
+                }
+                if (row > 0) {
+                    subSet1Row2.remove(lastAddItemOfSubSetRow2.pop());
+                    currentSetRow2.remove(lastAddIndexStackRow2.pop());
                 }
                 row--;
                 if (row < 0) {
@@ -201,16 +241,16 @@ public class Problem extends  Thread {
         return true;
     }
     public boolean judgeRow2(int []queen, int row) {
-        HashSet<Integer> set1 = new HashSet<>();
-        for (int i = 0; i <=row; i++) {
-            if (i!=row&&queen[i] == queen[row]) {
-                return false;
-            }
-            if (set1.contains(row1[i] - baseLine[queen[i]])) {
-                return false;
-            }
-            set1.add(row1[i] - baseLine[queen[i]]);
+        if (currentSetRow2.contains(queen[row])) {
+            return false;
         }
+        if (subSet1Row2.contains(row1[row] - baseLine[queen[row]])) {
+            return false;
+        }
+        currentSetRow2.add(queen[row]);
+        subSet1Row2.add(row1[row] - baseLine[queen[row]]);
+        lastAddIndexStackRow2.push(queen[row]);
+        lastAddItemOfSubSetRow2.push(row1[row] - baseLine[queen[row]]);
         return true;
     }
 
@@ -229,13 +269,13 @@ public class Problem extends  Thread {
                 limitOfRow1[i][0] = Math.max(row1[i] - r, -r)+r;
                 limitOfRow1[i][1] = Math.min(row1[i] + r, r)+r;
             }
-            sortByLimitLength(limitOfRow1);
+//            sortByLimitLength(limitOfRow1);
         } else if (row == 2) {
             for (int i = 0; i < limitOfRow2.length; i++) {
                 limitOfRow2[i][0] = Math.max(Math.max(row1[i] - r, -r), Math.max(row2[i] - r, -r))+r;
                 limitOfRow2[i][1] = Math.min(Math.min(row1[i] + r, r), Math.min(row2[i] + r, r))+r;
             }
-            sortByLimitLength(limitOfRow2);
+//            sortByLimitLength(limitOfRow2);
         }
 
         //按照limit中的区间排序
@@ -261,7 +301,7 @@ public class Problem extends  Thread {
         for (int i = 0; i < m; i++) {
             list.add(new SortObject(row1[i], row2[i], limit[i], limit[i][1] - limit[i][0]));
         }
-        list.sort((a,b)->a.limitSub-b.limitSub);
+        list.sort((a,b)->b.limitSub-a.limitSub);
         for (int i = 0; i < m; i++) {
             row1[i] = list.get(i).row1;
             row2[i] = list.get(i).row2;
@@ -278,7 +318,7 @@ public class Problem extends  Thread {
 //            new Problem(m,1).solution(m);
 //            new Problem(m,3).start();
             long startTime = System.currentTimeMillis();    //获取开始时间
-            new Problem(m,3).solution(m);
+            new Problem(m,3,startTime).solution(m);
 //            new Problem(m,3).start();
             long endTime = System.currentTimeMillis();    //获取结束时间
 
