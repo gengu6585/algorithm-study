@@ -1,56 +1,237 @@
-计算机网络
-	TCP
-	UDP
-	HTTP
-		定义：超文本传输协议
-		状态码
-			100
-				协议切换，websocket
-			200
-				成功
-			300
-				重定向
-			400
-				客户端错误
-			500
-				服务端错误
-		缓存技术
-			强制缓存
-				服务端通过Cache-control和expires两个字段来控制浏览器的缓存行为。
-	HTTPS
-		四次握手
-			1.客户端TLS协议版本，随机数，密码套件列表
-			2.确认TLS协议列表，生成随机数，确认密码套件列表，服务器数字证书
-			3.随机数，第三个随机数会被非对称加密传输
-			4.双方都收到了三个随机数，且最后一个随机数是加密传输的。隧道建立完成。
-		非对称加密
-			RSA
-				基于质因数分解
-			ECDHE
-				基于椭圆加密
-		中间人攻击
-			浏览器会验证证书不安全，警告用户。
-	HTTP演变
-		HTTP 1.1
-			加入长连接
-			支持管道传输
-		HTTP 2.0
-			头部压缩
-			二进制编码
-			引入stream概念，并发传输
-				但还是会有TCP层的对头阻塞，一旦一条stream丢包，其他的stream得等着
-			服务器推送
-			TLS 1.2+
-		HTTP 3.0
-			TCP改成了UDP，使用QUICK协议
-			连接更快，不需要再走TCP三次握手
-			连接无关IP
-	WebSocket
-		HTTP是半双工
-			只有客户端请求，服务端才会回复
-		WebSocket时全双工
-			双方都可以主动向对方发送消息，网页游戏中通常会使用。在HTTP请求头中写到特殊字段即可建立WebSocket连接。
-			请求：Upgrade：websocket
-			回复：Switching Protocols
-	ARP
-	边角知识
+秋招问题
+	计算机网络
+		TCP
+		UDP
+		HTTP
+			定义：超文本传输协议
+			状态码
+				100
+					协议切换，websocket
+				200
+					成功
+				300
+					重定向
+				400
+					客户端错误
+				500
+					服务端错误
+			缓存技术
+				强制缓存
+					服务端通过Cache-control和expires两个字段来控制浏览器的缓存行为。
+		HTTPS
+			四次握手
+				1.客户端TLS协议版本，随机数，密码套件列表
+				2.确认TLS协议列表，生成随机数，确认密码套件列表，服务器数字证书
+				3.随机数，第三个随机数会被非对称加密传输
+				4.双方都收到了三个随机数，且最后一个随机数是加密传输的。隧道建立完成。
+			非对称加密
+				RSA
+					基于质因数分解
+				ECDHE
+					基于椭圆加密
+			中间人攻击
+				浏览器会验证证书不安全，警告用户。
+		HTTP演变
+			HTTP 1.1
+				加入长连接
+				支持管道传输
+			HTTP 2.0
+				头部压缩
+				二进制编码
+				引入stream概念，并发传输
+					但还是会有TCP层的对头阻塞，一旦一条stream丢包，其他的stream得等着
+				服务器推送
+				TLS 1.2+
+			HTTP 3.0
+				TCP改成了UDP，使用QUICK协议
+				连接更快，不需要再走TCP三次握手
+				连接无关IP
+		WebSocket
+			HTTP是半双工
+				只有客户端请求，服务端才会回复
+			WebSocket时全双工
+				双方都可以主动向对方发送消息，网页游戏中通常会使用。在HTTP请求头中写到特殊字段即可建立WebSocket连接。
+				请求：Upgrade：websocket
+				回复：Switching Protocols
+		ARP
+		边角知识
+	操作系统
+		并发
+		死锁
+		内存虚拟化
+		CPU虚拟化
+		持久化和IO
+	Android
+		四大组件
+			Activity
+			Service
+			ContentProvider
+			BroadCast
+			四大组件大部分方法都在主线程中执行，一个App进程中至少包含两个重要线程
+				ActivityThread
+					主线程
+				ApplicationThread
+					用于跟AMS通信的线程，作为服务端
+		UI开发
+			渲染和绘制逻辑
+			事件分发流程
+			MVVM和MVP模型
+				MVP模型中视图不再和数据耦合，由Presenter来获取Model数据并控制View的行为，需要view提供操作视图的接口。
+				MVVM模型同样也是把视图和数据进行解耦合，但是更进一步的是ModelView的同过LiveData对数据进行分装，使得数据变得可观察，实现了数据和视图之间的双向绑定，因此ModelView不需要去控制视图，而是控制数据，数据会通过观察者模式立即体现到视图中。
+			布局和组件
+		问题处理
+			anr
+				分析流程
+				定义和分类
+			crash
+				分类
+				分析流程
+		Android中的内存泄露问题
+			Context
+				静态类持有context对象
+			handler
+				new handler 是使用匿名内部类，导致内存泄露，原因是匿名内部类默认含有外部对象的强引用，添加消息是handler会作为target存到looper的消息队列里，looper声明周期超出activity或者service对象声明周期时发生内存泄露。
+				解决方法是activity销毁时清理消息，或者避免使用匿名内部类，改成使用静态内部类持有activity弱引用。
+		必须了解的组件和原理
+			AMS
+			WMS
+			Binder
+				ServiceManager
+			Apk安装流程
+			Android画面渲染和合成原理
+				硬件
+					GPU
+					CPU
+					DPU
+				一些概念
+					画面渲染
+						指把绘图指令转化为二维颜色数组的过程
+					图像合成
+						合并多个图层，如果存在DPU硬件，可以交个DPU进行合成，没有则使用GPU合成。 通常DEVICE表示HWC合成，CLIENT表示GPU合成。
+					GraphicBuffer
+						合成和渲染使用的一片内存
+						因在合成和渲染过程中会被多个硬件持有，所有有Fence机制来保证跨硬件访问的数据安全
+							手机不像PC一样有独立显存
+					GraphicQueue
+						画面渲染合成时使用的图形buffer队列，对buffer做了封装，包含四种状态。
+							FREE->DEQUEUED->QUEUED->ACQUIRED->FREE
+					Surface
+						Surface是图像的生产者，也就是说使用Surface来渲染图像。持有了BufferQueue的引用。
+						使用Surface通常有两种方式来渲染
+							Canvas
+							OpenGL ES
+					SurfaceFlinger
+						图形buffer的消费者
+						调用HWC进行图像合成
+						硬件Vsync的开关和监听者
+						有两种Vsync信号
+							app Vsync 控制图像渲染
+							sf Vsync 控制图像合成
+							sf可以通过设置不同的vsync偏移以使得在一个图像渲染后立刻进行合成并上屏。
+				图像的显示流程
+					SurfaceFlinger持续在监听Vsync信号，获取所有Layer层并调用HWC进行图像合成
+					第一阶段-启动进程
+						所有的Activity启动命令最终都会IPC调用AMS，如果Activity进程不存在，则先通知zygote去fork一个app进程
+					第二阶段-activity创建和启动，以及view的初始化
+						Activity进程创建后，进入ActivityThread main函数（主线程），执行attach方法，attach中创建了ApplicationThread，并跨进程传递给AMS管理。
+						AMS通过ApplicationThread通知ActivityThread调用performLaunchActivity创建activity，依次调用activity#attach中创建了PhoneWindow对象activity#onCreate初试化activity
+						onCreate中会调用setContentView往window中填入xml的view对象。
+							window#setContentView创建了DecorView和根据主题创建了ContentParent，最终的用户层view会作为ContentParent的子view，contentParent作为decorView的子view。 最终回调onContentChanged完成视图初始化。
+					第三阶段-onResume画面可见并渲染
+						onResume中会调用makeVisible会调用windowManagerGlobal中创建了ViewRootImpl，调用ViewRootImpl请求Vsync信号，并通过binder向wms添加窗口。
+							  void setView(View decorView){
+        mView = decorView;//将DecorView保存到ViewRootImpl的成员变量mView中
+        requestLayout();//请求VSync信号
+        //通过binder向wms添加窗口
+      	res = mWindowSession.addToDisplay();
+    }
+
+							viewRootImpl包含了图像绘制中最重要的四个橘色
+								Surface
+								Choreographer
+								decorView
+							app进程所有的activity对应的ViewRootImpl会统一在WindowManagerGlobal存放在mViews之中，统一管理。
+		拓展
+			插件化
+			启动优化
+			热修复
+		Android后台任务
+			service
+			intentService
+			ThreadHandler
+			CompleteCallable
+		常见问题
+			ART虚拟机和Dalvik虚拟机的区别
+				1.Dalvik依靠JIT编译期去解释字节码。ART使用AOT（Ahead of time）技术编译，在应用安装时就预编译字节码到机器语言，应用程序执行更有效率、启动更快。
+				2.ART优点： 系统性能提升，应用启动更快、运行更快，电池续航更长，支持更低硬件。
+				3.ART缺点，更大的存储空间占用，更长的应用安装时间。
+	计算机组成原理
+	设计模式
+		外观模式Facade
+			对多个子系统对外封住为一个更易用的接口
+		组合和继承区别
+			组合是Has A的关系
+				减少类的层次，使用组合的方式更容易管理，实现类之间依赖更少，类更多
+			继承是IS A的关系
+			同样的方式，组合可能需要把通用的行为抽象成接口，已组合的形式呈现。
+		适配器模式
+		单例模式
+			Double-Check懒汉模式（必须会背）
+		策略模式
+		消息驱动-命令模式
+		装饰者模式
+	数据库
+		MySql
+		Redis
+	Java基础
+		并发
+			多线程执行需保证的三大特性
+				原子性
+					原子性通常需要操作系统提供支持，比如在汇编层面系统提供xchange、compareAndSwap这样的原子指令。原理是操作系统保证对一个变量的读和写，中间不允许插入另一个线程对其的读写操作。利用这些原子指令，在上层实现乐观锁CAS和悲观锁。
+					Java中Unsafe类分装了一些原子操作，例如CAS。
+					原子性通常由乐观锁CAS和悲观锁来实现。
+				有序性
+					cpu或者java虚拟机在执行指令时会为了提高效率，对指令执行顺序进行优化。遵循happenBefore原则，默认只保证代码块执行结果和单线程执行一致。对没有读写依赖、锁依赖等的语句进行重排序。
+					在多线程环境中，Java字节码中存在类似c内联汇编一样的内存屏障指令，来进制某些情况下的重排序。但在Java语言层面，我们通常使用其提供的一些特性来保证。
+						volatile关键字
+							其修饰的变量，在任意涉及该变量操作的字节码指令前后插入loadStore等指令，以限制解释器进行重排序。
+						synchronized
+							通过synchronized关键字，也可以禁止重排，synchronized代码块会自动添加lock和unlock指令。
+				可见性
+					修改变量之后，能够立即刷新到主存，并清空其他线程的缓存，保证对共享变量修改有效。
+						同样，上述两个指令也能保证可见性，volatile强制对其修饰变量读写不再使用本地内存。synchronized通过lock和unlock进制重排序。但不保证synchronized内部重排序。
+		容器八股
+		虚拟机
+			内存模型
+				Java中每个线程有自己的工作内存，其中变量主内存的副本。
+				因此在多线程环境下，共享变量的修改不是实时同步到主存的。每一条访问内存的语句，转化为字节码指令时，会先从工作内存中查找，不存在则使用load命令从主存中加载到工作内存。修改后使用store写会主存。于是会出现缓存不一致问题。
+			垃圾回收
+				Java堆内存区域划分
+				如何确认垃圾？垃圾的标记
+					引用计数
+					从GC root遍历
+				如何回收垃圾？垃圾的清理
+			Java中垃圾回收器
+		线程池
+			线程池作用
+			线程需考虑的参数
+		类加载
+			双亲委派模型
+			热修复
+		反射
+		热部署和热修复
+		杂类问题
+			内部类和静态内部有什么区别
+	后端
+		SpringBoot
+		Spring AOP和控制反转
+		消息队列
+		分布式
+			SpringCloud
+			常用问题
+				如何保证接口幂等性
+				如何设计分布式锁
+				如何实现分布式ID
+				分布式系统的CAP理论
+				如何保证高可用
+				分布式服务发现
